@@ -1,5 +1,5 @@
 ENABLE_64BIT?=1
-ENABLE_STATIC?=0
+ENABLE_STATIC?=1
 BIN?=bin
 
 CONFIG?=include/config.h

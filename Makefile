@@ -1,5 +1,8 @@
+MAKEFLAGS := --jobs=10
 CFLAGS+=-O3
-CFLAGS+=-g0
+#CFLAGS+=-g0
+
+LDFLAGS := -lrt -lpthread -static-libstdc++ -static-libgcc
 
 SCM_REV:=-D'SCM_REV="$(shell git rev-parse HEAD 2> /dev/null || echo 0)"'
 SCM_BRANCH=-D'SCM_BRANCH="$(shell git rev-parse --abbrev-ref HEAD 2> /dev/null || echo unknown)"'
@@ -10,7 +13,6 @@ ifneq ($(REQUIRED_MAKE_VERSION), $(firstword $(sort $(MAKE_VERSION) $(REQUIRED_M
 endif
 
 include config.mk
-
 -include delivery.mk
 
 DELIVERY_BUILD_NUMBER?=-D'DELIVERY_BUILD_NUMBER=0'
@@ -18,7 +20,7 @@ DELIVERY_SCM_REV?=-D'DELIVERY_SCM_REV="unknown"'
 DELIVERY_DATE?=-D'DELIVERY_DATE="unknown"'
 
 # Cross build support
-CROSS_COMPILE?=
+CROSS_COMPILE?=aarch64-linux-gnu-
 CXX:=$(CROSS_COMPILE)g++
 CC:=$(CROSS_COMPILE)gcc
 AS:=$(CROSS_COMPILE)as
@@ -35,6 +37,7 @@ TARGET:=$(shell $(CC) -dumpmachine)
 
 
 all: true_all
+	cp bin/libcrl_enc.a ../lib
 
 # Basic build rules and external variables
 include ctrlsw_version.mk
@@ -89,9 +92,7 @@ endif
 
 
 ifneq ($(ENABLE_ENCODER),0)
-  # ctrlsw_encoder
-  -include lib_conv_yuv/project.mk
-  -include exe_encoder/project.mk
+  -include crl_encoder/project.mk
 endif
 
 ifneq ($(BUILD_EXE_FBC),0)
